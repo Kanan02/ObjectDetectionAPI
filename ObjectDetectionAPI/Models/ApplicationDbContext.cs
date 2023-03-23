@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ObjectDetectionAPI.Models.Image;
 
 namespace ObjectDetectionAPI.Models
 {
     public class ApplicationDbContext:IdentityDbContext<IdentityUser>
     {
+        public DbSet<FileStore> FileStores { get; set; }
+        public DbSet<Metadata> Metadatas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
 
