@@ -91,9 +91,9 @@ namespace ObjectDetectionAPI.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("get-my-images")]
-        public async Task<IActionResult> GetUserImages(string userId)
+        public async Task<IActionResult> GetUserImages()
         {
-            var images = await _fileStoreService.GetImagesByUserId(userId);
+            var images = await _fileStoreService.GetImagesByUserId(User.FindFirstValue(ClaimTypes.NameIdentifier));
             return
                 StatusCode(StatusCodes.Status200OK, images);
             
