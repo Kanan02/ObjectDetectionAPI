@@ -16,14 +16,16 @@ namespace ObjectDetectionAPI.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly TokenService _tokenService;
+        private readonly FileStoreService _fileStoreService;
         private readonly IConfiguration _configuration;
         public AuthenticationController(UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, IConfiguration configuration,TokenService tokenService)
+            RoleManager<IdentityRole> roleManager, IConfiguration configuration,TokenService tokenService, FileStoreService fileStoreService)
         {
             _userManager=userManager;
             _roleManager = roleManager;
             _configuration=configuration;
             _tokenService = tokenService;
+            _fileStoreService = fileStoreService;
         }
         [HttpPost]
         public async Task<IActionResult> Register(RegisterUser registerUser,string role)
@@ -85,6 +87,16 @@ namespace ObjectDetectionAPI.Controllers
         public async Task<IActionResult> Me()
         {
             return Ok(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpGet("get-my-images")]
+        public async Task<IActionResult> GetUserImages(string userId)
+        {
+            var images = await _fileStoreService.GetImagesByUserId(userId);
+            return
+                StatusCode(StatusCodes.Status200OK, images);
+            
         }
     }
 }

@@ -14,7 +14,7 @@ namespace ObjectDetectionAPI.Models.Image
         public long SizeInBytes { get; set; }
         public string Path { get; set; }
         public string ProjectPath { get; set; }
-
+        public string UserId { get; set; }
         public List<Metadata> Metadatas { get; set; } = new List<Metadata>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ObjectDetectionAPI.Dtos.RequestDtos;
 using ObjectDetectionAPI.Models;
 using ObjectDetectionAPI.Services;
@@ -7,6 +8,7 @@ namespace ObjectDetectionAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class ImageController : ControllerBase
     {
         private readonly FileStoreService _fileStoreService;

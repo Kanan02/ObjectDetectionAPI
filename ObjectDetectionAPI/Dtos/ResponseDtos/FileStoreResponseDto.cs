@@ -14,6 +14,6 @@ namespace ObjectDetectionAPI.Dtos.ResponseDtos
         public long SizeInBytes { get; set; }
         public string Path { get; set; }
         public string ProjectPath { get; set; }
-        public List<Metadata> Metadatas { get; set; } = new List<Metadata>();
+        public List<MetadataResponse> Metadatas { get; set; } = new List<MetadataResponse>();
     }
 }
