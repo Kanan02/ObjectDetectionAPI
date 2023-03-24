@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectDetectionAPI.Dtos.RequestDtos;
 using ObjectDetectionAPI.Models;
 using ObjectDetectionAPI.Services;
+using System.Security.Claims;
 
 namespace ObjectDetectionAPI.Controllers
 {
@@ -18,7 +19,7 @@ namespace ObjectDetectionAPI.Controllers
             _fileStoreService = fileStoreService;
         }
 
-        [HttpPost]
+        [HttpPost("upload-image-content")]
         public async Task<IActionResult> AddImage(CreateFileStoreRequestDto request)
         {
             var response = await _fileStoreService.SaveImageInfo(request);
@@ -50,5 +51,19 @@ namespace ObjectDetectionAPI.Controllers
                     });
             return Ok(response);
         }
+
+        [HttpPost("upload-image")] 
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequest request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            request.UserId = userId;
+
+            var response = await _fileStoreService.UploadImage(request);
+            if (response.Status == "Success")
+                return StatusCode(StatusCodes.Status200OK, response);
+
+            return StatusCode(StatusCodes.Status400BadRequest, response);
+        }
+
     }
 }

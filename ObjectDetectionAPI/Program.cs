@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ObjectDetectionAPI.Models;
@@ -65,6 +66,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<FileStoreService>();
+builder.Services.AddScoped<FileService>();
 var app = builder.Build();
 app.UseCors(builder =>
 {
@@ -81,6 +83,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+app.UseStaticFiles(new StaticFileOptions
+{
+
+    FileProvider = new PhysicalFileProvider(
+                  Path.Combine(app.Environment.ContentRootPath, "Uploads")),
+    RequestPath = "/Uploads",
+
+});
 
 app.UseAuthorization();
 

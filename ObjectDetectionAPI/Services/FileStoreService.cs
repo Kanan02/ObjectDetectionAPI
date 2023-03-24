@@ -4,6 +4,9 @@ using ObjectDetectionAPI.Dtos.RequestDtos;
 using ObjectDetectionAPI.Dtos.ResponseDtos;
 using ObjectDetectionAPI.Models;
 using ObjectDetectionAPI.Models.Image;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Threading;
+using ImageMagick;
 
 namespace ObjectDetectionAPI.Services
 {
@@ -11,11 +14,13 @@ namespace ObjectDetectionAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly FileService _fileService;
 
-        public FileStoreService(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+        public FileStoreService(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager, FileService fileService)
         {
             _context= dbContext;
             _userManager = userManager;
+            _fileService = fileService;
         }
 
         public async Task<Response> SaveImageInfo(CreateFileStoreRequestDto fileStoreDto)
@@ -124,6 +129,45 @@ namespace ObjectDetectionAPI.Services
             var images = await _context.FileStores.Include("Metadatas").Where(x => x.UserId == userId).ToListAsync();
             return images;
 
+        }
+
+        public async Task<Response> UploadImage(UploadImageRequest request)
+        {
+            PathResponse pathResponse;
+            try
+            {
+                var file = request.Image;
+                using var fileStream = new MemoryStream();
+                await file.CopyToAsync(fileStream).ConfigureAwait(false);
+                fileStream.Position = 0;
+
+                using MagickImage image = new MagickImage(fileStream);
+                image.Quality = 10; // This is the Compression level.
+                image.Strip();
+                using var newStream = new MemoryStream();
+                await image.WriteAsync(newStream).ConfigureAwait(false);
+                pathResponse = await this._fileService.SaveAsync(request.FolderDir, file.FileName, newStream);
+            }
+            catch (Exception e)
+            {
+                return new Response() { Status = "Error", Message = "Unable to save image!" };
+            }
+
+            var fileStore = new FileStore()
+            {
+                FileExtension = Path.GetExtension(request.Image.FileName),
+                ContentType = request.Image.ContentType,
+                FileName = request.Image.FileName,
+                UniqueFileName = Path.GetFileName(pathResponse.PhysicalPath),
+                Name = Path.GetFileNameWithoutExtension(request.Image.FileName),
+                Path = pathResponse.PhysicalPath,
+                ProjectPath = pathResponse.VirtualPath,
+                SizeInBytes = request.Image.Length,
+                UserId = request.UserId
+            };
+            await _context.FileStores.AddAsync(fileStore);
+            await _context.SaveChangesAsync();
+            return new Response() { Status = "Success", Message = "Image uploaded!" };
         }
     }
 }
