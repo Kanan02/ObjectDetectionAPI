@@ -27,8 +27,8 @@ namespace ObjectDetectionAPI.Controllers
             _tokenService = tokenService;
             _fileStoreService = fileStoreService;
         }
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterUser registerUser,string role)
+        [HttpPost("sign-up")]
+        public async Task<IActionResult> Register(RegisterUser registerUser)
         {
             //Check User Exist
             var userExist = await _userManager.FindByNameAsync(registerUser.Username);
@@ -43,23 +43,16 @@ namespace ObjectDetectionAPI.Controllers
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.Username
             };
-            if (await _roleManager.RoleExistsAsync(role))
-            {
+
                 var result = await _userManager.CreateAsync(user, registerUser.Password);
                 if (!result.Succeeded)
                 {
                      return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User failed to create!" });
                 }
                 //assign a role
-                await _userManager.AddToRoleAsync(user, role);
+                await _userManager.AddToRoleAsync(user, "User");
 
                 return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = "User Created Successfully!" });
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status404NotFound, new Response { Status = "Error", Message = "Role does not exist!" });
-
-            }
 
 
         }
@@ -82,13 +75,6 @@ namespace ObjectDetectionAPI.Controllers
             return StatusCode(StatusCodes.Status200OK,
                 accessToken);
         }
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        [HttpGet("me")]
-        public async Task<IActionResult> Me()
-        {
-            return Ok(User.FindFirstValue(ClaimTypes.NameIdentifier));
-        }
-
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("get-my-images")]
         public async Task<IActionResult> GetUserImages()
