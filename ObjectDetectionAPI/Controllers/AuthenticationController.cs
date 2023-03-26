@@ -53,8 +53,6 @@ namespace ObjectDetectionAPI.Controllers
                 await _userManager.AddToRoleAsync(user, "User");
 
                 return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = "User Created Successfully!" });
-
-
         }
 
 
@@ -73,7 +71,7 @@ namespace ObjectDetectionAPI.Controllers
             }
             string accessToken = _tokenService.CreateToken(userExist);
             return StatusCode(StatusCodes.Status200OK,
-                accessToken);
+                new Response { Status="Success",Message=accessToken});
         }
         [Authorize(AuthenticationSchemes = "Bearer")]
         [HttpGet("get-my-images")]

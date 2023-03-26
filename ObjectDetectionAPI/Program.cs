@@ -76,11 +76,16 @@ app.UseCors(builder =>
         .AllowAnyOrigin();
 });
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+    //c.SwaggerEndpoint("/swagger/v1/swagger.json", "back_end v1");
+    string swaggerJsonBasePath = string.IsNullOrWhiteSpace(c.RoutePrefix) ? "." : "..";
+    c.SwaggerEndpoint($"{swaggerJsonBasePath}/swagger/v1/swagger.json", "MathYouCanAPI");
+
+});
 
 app.UseHttpsRedirection();
 
