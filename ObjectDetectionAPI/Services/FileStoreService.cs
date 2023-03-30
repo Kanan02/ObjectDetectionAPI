@@ -131,7 +131,7 @@ namespace ObjectDetectionAPI.Services
 
         }
 
-        public async Task<Response> UploadImage(UploadImageRequest request)
+        public async Task<FileStore> UploadImage(UploadImageRequest request)
         {
             PathResponse pathResponse;
             try
@@ -167,7 +167,7 @@ namespace ObjectDetectionAPI.Services
             };
             await _context.FileStores.AddAsync(fileStore);
             await _context.SaveChangesAsync();
-            return new Response() { Status = "Success", Message = "Image uploaded!" };
+            return fileStore;
         }
     }
 }

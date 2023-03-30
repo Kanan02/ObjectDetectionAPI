@@ -60,12 +60,10 @@ namespace ObjectDetectionAPI.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.UserId = userId;
-            _pythonRunService.Run();
             var response = await _fileStoreService.UploadImage(request);
-            if (response.Status == "Success")
-                return StatusCode(StatusCodes.Status200OK, response);
-
-            return StatusCode(StatusCodes.Status400BadRequest, response);
+            var pathToFolder = response.Path.Replace($"/{response.FileName}", "");
+            var metadata=await _pythonRunService.Run(response.Path,pathToFolder,response.Id);
+            return StatusCode(StatusCodes.Status200OK, metadata);
         }
 
     }
