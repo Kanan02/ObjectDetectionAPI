@@ -13,10 +13,13 @@ namespace ObjectDetectionAPI.Controllers
     public class ImageController : ControllerBase
     {
         private readonly FileStoreService _fileStoreService;
+        private readonly PythonRunService _pythonRunService;
 
-        public ImageController(FileStoreService fileStoreService)
+        public ImageController(FileStoreService fileStoreService,PythonRunService pythonRunService)
         {
             _fileStoreService = fileStoreService;
+            _pythonRunService = pythonRunService;
+
         }
 
         [HttpPost("upload-image-content")]
@@ -57,7 +60,7 @@ namespace ObjectDetectionAPI.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.UserId = userId;
-
+            _pythonRunService.Run();
             var response = await _fileStoreService.UploadImage(request);
             if (response.Status == "Success")
                 return StatusCode(StatusCodes.Status200OK, response);

@@ -67,6 +67,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<FileStoreService>();
 builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<PythonRunService>();
 var app = builder.Build();
 app.UseCors(builder =>
 {
