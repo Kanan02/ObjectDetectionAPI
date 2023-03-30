@@ -13,8 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 //For EF
 var configuration = builder.Configuration;
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer
-(configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer
+//(configuration.GetConnectionString("DefaultConnection")));
+var connectionString = configuration.GetConnectionString("MysqlConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql
+(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()

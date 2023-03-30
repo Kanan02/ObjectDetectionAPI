@@ -9,15 +9,15 @@ namespace ObjectDetectionAPI.Services
     {
         public PythonRunService()
         {
-            
+
         }
         public void Run()
         {
             string cmd = "main.py";
-            string args = "C:\\Users\\Kenan\\source\\repos\\Aspnet\\ObjectDetectionAPI\\ObjectDetectionAPI\\bin\\Debug\\net6.0\\Uploads\\img.png C:\\Users\\Kenan\\source\\repos\\Aspnet\\ObjectDetectionAPI\\ObjectDetectionAPI\\bin\\Debug\\net6.0\\Uploads";
+            string args = "/mnt/c/Users/aliev/PycharmProjects/yolo_object_detection/img.png /mnt/c/Users/aliev/PycharmProjects/yolo_object_detection/storage";
 
             ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = @"C:\Users\Kenan\AppData\Local\Microsoft\WindowsApps\python.exe";
+            start.FileName = "/usr/bin/python";
             start.Arguments = string.Format("{0} {1}", cmd, args);
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
@@ -29,7 +29,7 @@ namespace ObjectDetectionAPI.Services
                     Console.Write(result);
                 }
             }
-            
+
         }
     }
 }
